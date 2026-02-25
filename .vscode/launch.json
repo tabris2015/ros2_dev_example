@@ -57,6 +57,19 @@
             }
         },
         {
+            "name": "Debug: detector_node (ml_inference)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/ml_inference/ml_inference/detector_node.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/install/ml_inference/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages",
+                "LD_LIBRARY_PATH": "/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib",
+                "AMENT_PREFIX_PATH": "/opt/ros/humble",
+                "PATH": "/opt/ros/humble/bin:${env:PATH}"
+            }
+        },
+        {
             "name": "Debug: hello_node_cpp (Combined)",
             "type": "cppdbg",
             "request": "launch",

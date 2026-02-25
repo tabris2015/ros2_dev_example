@@ -9,7 +9,25 @@
       "Bash(timeout 3 ros2 run hello_world_combined hello_node_cpp)",
       "Bash(timeout 3 ros2 run hello_world_combined hello_node_py)",
       "Bash(find /workspaces/hello_ros2/src -name \"__init__.py\" -exec ls -la {} ;)",
-      "Bash(chmod +x /workspaces/hello_ros2/.claude/hooks/guard-workspace-clean.sh /workspaces/hello_ros2/.claude/hooks/format-cpp.sh)"
+      "Bash(chmod +x /workspaces/hello_ros2/.claude/hooks/guard-workspace-clean.sh /workspaces/hello_ros2/.claude/hooks/format-cpp.sh)",
+      "Bash(pip3 --version)",
+      "Bash(pip3 show setuptools)",
+      "Bash(ros2 interface show sensor_msgs/msg/Image)",
+      "Bash(ros2 interface show vision_msgs/msg/Detection2D)",
+      "Bash(ros2 interface show vision_msgs/msg/ObjectHypothesisWithPose)",
+      "Bash(ros2 interface show vision_msgs/msg/BoundingBox2D)",
+      "Skill(build)",
+      "Skill(build:*)",
+      "Bash(colcon build --symlink-install --packages-select ml_inference)",
+      "Bash(python3 -c \"import timm; print\\(''timm version:'', timm.__version__\\)\")",
+      "Bash(python3 -c \"import torch; print\\(''PyTorch version:'', torch.__version__\\)\")",
+      "Bash(python3 -c \"import torchvision; print\\(''torchvision version:'', torchvision.__version__\\); from torchvision.models import detection; print\\(''Available detection models:'', dir\\(detection\\)\\)\")",
+      "Bash(python3 -c \"import torchvision; print\\(''torchvision version:'', torchvision.__version__\\)\")",
+      "Bash(python3:*)",
+      "Bash(git -C /workspaces/hello_ros2 remote -v)",
+      "Bash(git -C /workspaces/hello_ros2 branch -a)",
+      "Bash(git -C /workspaces/hello_ros2 diff)",
+      "Bash(git -C /workspaces/hello_ros2 log --oneline -5)"
     ]
   }
 }

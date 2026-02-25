@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-ROS 2 Humble workspace with three packages implementing the same publisher node pattern. Both nodes publish `std_msgs/String` messages on the `chatter` topic at 1 Hz.
+ROS 2 Humble workspace with three hello-world packages implementing the same publisher node pattern, plus an ML inference package for object detection. The hello-world nodes publish `std_msgs/String` messages on the `chatter` topic at 1 Hz. The ML inference node subscribes to camera images and publishes `vision_msgs/Detection2DArray`.
 
 ## Build Commands
 
@@ -19,6 +19,7 @@ colcon build
 colcon build --packages-select hello_world
 colcon build --packages-select hello_world_cpp
 colcon build --packages-select hello_world_combined
+colcon build --packages-select ml_inference
 
 # Source the workspace overlay after building
 source install/setup.bash
@@ -28,6 +29,7 @@ colcon test
 colcon test --packages-select hello_world
 colcon test --packages-select hello_world_cpp
 colcon test --packages-select hello_world_combined
+colcon test --packages-select ml_inference
 
 # View test results
 colcon test-result --verbose
@@ -41,6 +43,14 @@ ros2 run hello_world hello_node             # Python node (standalone package)
 ros2 run hello_world_cpp hello_node         # C++ node (standalone package)
 ros2 run hello_world_combined hello_node_py   # Python node (combined package)
 ros2 run hello_world_combined hello_node_cpp  # C++ node (combined package)
+
+# ML inference node (object detection)
+ros2 run ml_inference detector_node                     # Default: MobileNetV3, CPU
+ros2 run ml_inference detector_node --ros-args \
+    -p confidence_threshold:=0.7 \
+    -p model_name:=fasterrcnn_resnet50_fpn \
+    -p image_topic:=/usb_cam/image_raw \
+    -p device:=cuda:0                                   # GPU (if available)
 ```
 
 ## Architecture
@@ -49,11 +59,13 @@ ros2 run hello_world_combined hello_node_cpp  # C++ node (combined package)
 - **`src/hello_world_cpp/`** — C++-only package (`ament_cmake` build type). Node in `src/hello_node.cpp`, C++17 with `-Wall -Wextra -Wpedantic`. Tests use `ament_lint_auto`.
 - **`src/hello_world_combined/`** — Mixed C++/Python package (`ament_cmake` + `ament_cmake_python`). Contains both nodes in a single package. C++ node built via CMake, Python module installed via `ament_python_install_package()`, Python entry point in `scripts/hello_node_py`. Tests use both `ament_lint_auto` and `ament_cmake_pytest`.
 
-All packages depend on `rclcpp`/`rclpy` and `std_msgs`.
+- **`src/ml_inference/`** — Python-only package (`ament_python` build type). Object detection node in `ml_inference/detector_node.py` using torchvision pretrained models. Subscribes to `sensor_msgs/Image`, publishes `vision_msgs/Detection2DArray`. Configurable via ROS parameters: `confidence_threshold`, `device`, `image_topic`, `model_name`, `model_path`. Requires PyTorch (installed in devcontainer).
+
+Hello-world packages depend on `rclcpp`/`rclpy` and `std_msgs`. The ML inference package depends on `rclpy`, `sensor_msgs`, `vision_msgs`, and `cv_bridge`.
 
 ## Development Environment
 
-Devcontainer based on `osrf/ros:humble-desktop-full` with host networking and privileged mode. VS Code debug configurations exist in `.vscode/launch.json` for all packages — Python nodes use debugpy, C++ nodes use GDB (cppdbg). C++ IntelliSense is configured in `.vscode/c_cpp_properties.json` to use the merged `build/compile_commands.json` (covers all C++ packages). Build defaults in `colcon_defaults.yaml` ensure compile commands and Debug symbols are always generated.
+Devcontainer based on `osrf/ros:humble-desktop-full` with host networking and privileged mode. PyTorch CPU is pre-installed in the devcontainer image (see `docs/gpu_migration.md` to switch to CUDA). VS Code debug configurations exist in `.vscode/launch.json` for all packages — Python nodes use debugpy, C++ nodes use GDB (cppdbg). C++ IntelliSense is configured in `.vscode/c_cpp_properties.json` to use the merged `build/compile_commands.json` (covers all C++ packages). Build defaults in `colcon_defaults.yaml` ensure compile commands and Debug symbols are always generated.
 
 ## Claude Code Skills
 

@@ -22,6 +22,16 @@ RUN apt-get update && apt-get install -y \
     gdb \
     && rm -rf /var/lib/apt/lists/*
 
+# ---- ML dependencies ----
+# CPU-only PyTorch. To switch to GPU, change the index URL:
+#   https://download.pytorch.org/whl/cu118  (CUDA 11.8)
+#   https://download.pytorch.org/whl/cu121  (CUDA 12.1)
+# and add "--gpus", "all" to devcontainer.json runArgs.
+ARG PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
+RUN pip3 install --no-cache-dir \
+    torch torchvision \
+    --index-url ${PYTORCH_INDEX_URL}
+
 # Set the default user
 USER $USERNAME
 
