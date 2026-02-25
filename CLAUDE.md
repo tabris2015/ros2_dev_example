@@ -53,7 +53,7 @@ All packages depend on `rclcpp`/`rclpy` and `std_msgs`.
 
 ## Development Environment
 
-Devcontainer based on `osrf/ros:humble-desktop-full` with host networking and privileged mode. VS Code debug configurations exist in `.vscode/launch.json` for all packages — Python nodes use debugpy, C++ nodes use GDB (cppdbg). C++ IntelliSense uses compile commands from `build/hello_world_combined/compile_commands.json`.
+Devcontainer based on `osrf/ros:humble-desktop-full` with host networking and privileged mode. VS Code debug configurations exist in `.vscode/launch.json` for all packages — Python nodes use debugpy, C++ nodes use GDB (cppdbg). C++ IntelliSense is configured in `.vscode/c_cpp_properties.json` to use the merged `build/compile_commands.json` (covers all C++ packages). Build defaults in `colcon_defaults.yaml` ensure compile commands and Debug symbols are always generated.
 
 ## Claude Code Skills
 
@@ -61,7 +61,7 @@ Custom skills are defined in `.claude/skills/`. Use these slash commands for com
 
 | Skill | Usage | Description |
 |---|---|---|
-| `/build` | `/build hello_world` or `/build --all` | Build packages with colcon, source overlay |
+| `/build` | `/build hello_world` or `/build --release` | Build packages (Debug default, `--release` for Release) |
 | `/test` | `/test hello_world_cpp` | Build + test + report results |
 | `/new-package` | `/new-package my_driver cpp` | Scaffold a new ROS 2 package (python/cpp/combined) |
 | `/new-node` | `/new-node lidar_proc my_driver cpp` | Add a node to an existing package |

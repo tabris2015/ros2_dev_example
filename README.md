@@ -91,10 +91,13 @@ hello_ros2/
 │   ├── devcontainer.json
 │   └── Dockerfile
 ├── .vscode/                          # VS Code config
+│   ├── c_cpp_properties.json         # C++ IntelliSense config
 │   ├── launch.json                   # Debug configurations
 │   └── settings.json                 # Editor settings
 ├── .mcp.json                         # MCP server config (ROS 2)
+├── .gitignore                        # Git ignore (build/, install/, log/)
 ├── CLAUDE.md                         # AI assistant instructions
+├── colcon_defaults.yaml              # Default colcon build settings
 └── README.md                         # This file
 ```
 
@@ -140,8 +143,12 @@ All three packages implement the same node pattern — a publisher that sends `s
 
 ### Build
 
+The workspace uses `colcon_defaults.yaml` to set default CMake arguments for all builds:
+- **Debug build** (`CMAKE_BUILD_TYPE=Debug`) — includes debug symbols for GDB
+- **Compile commands** (`CMAKE_EXPORT_COMPILE_COMMANDS=ON`) — enables C++ IntelliSense in VS Code
+
 ```bash
-# Build everything
+# Build everything (Debug by default)
 colcon build
 
 # Build a single package
@@ -149,6 +156,9 @@ colcon build --packages-select hello_world
 
 # Build with symlinks (faster iteration for Python)
 colcon build --symlink-install
+
+# Release build (overrides the Debug default)
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # Always source the overlay after building
 source install/setup.bash
@@ -212,7 +222,11 @@ VS Code launch configurations are provided in `.vscode/launch.json` for all four
 3. Select the configuration from the dropdown
 4. Press F5
 
-For C++ debugging, the executable must exist in `install/` — rebuild if it's missing.
+For C++ debugging, the executable must exist in `install/` — rebuild if it's missing. The default Debug build type ensures symbols are available without extra configuration.
+
+### C++ IntelliSense
+
+C++ IntelliSense is configured via `.vscode/c_cpp_properties.json` to use the merged `build/compile_commands.json` (generated automatically by `colcon_defaults.yaml`). If IntelliSense shows errors after a clean build, reload the VS Code window (Ctrl+Shift+P → "Developer: Reload Window").
 
 ---
 
@@ -227,11 +241,13 @@ Skills are defined in `.claude/skills/` and invoked with `/` in Claude Code:
 #### `/build` — Build packages
 
 ```
-/build hello_world          # Build one package
-/build --all                # Build entire workspace
+/build hello_world          # Build one package (Debug)
+/build --all                # Build entire workspace (Debug)
+/build --release            # Build all in Release mode
+/build hello_world --release  # Build one package in Release mode
 ```
 
-Automatically sources ROS 2, runs `colcon build --symlink-install`, and sources the overlay. Reports errors with file paths and line numbers.
+Automatically sources ROS 2, runs `colcon build --symlink-install`, and sources the overlay. Defaults to Debug builds (set in `colcon_defaults.yaml`). Pass `--release` to build with optimizations. Reports errors with file paths and line numbers.
 
 #### `/test` — Run tests
 
