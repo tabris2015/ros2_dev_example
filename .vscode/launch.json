@@ -1,0 +1,89 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug: hello_node (Python)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/hello_world/hello_world/hello_node.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/install/hello_world/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages",
+                "LD_LIBRARY_PATH": "/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib",
+                "AMENT_PREFIX_PATH": "/opt/ros/humble",
+                "PATH": "/opt/ros/humble/bin:${env:PATH}"
+            }
+        },
+        {
+            "name": "Debug: hello_node (C++)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/install/hello_world_cpp/lib/hello_world_cpp/hello_node",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "${workspaceFolder}/install/hello_world_cpp/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib"
+                },
+                {
+                    "name": "AMENT_PREFIX_PATH",
+                    "value": "${workspaceFolder}/install/hello_world_cpp:/opt/ros/humble"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Debug: hello_node_py (Combined)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/hello_world_combined/hello_world_combined/hello_node.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/install/hello_world_combined/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages",
+                "LD_LIBRARY_PATH": "/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib",
+                "AMENT_PREFIX_PATH": "${workspaceFolder}/install/hello_world_combined:/opt/ros/humble",
+                "PATH": "/opt/ros/humble/bin:${env:PATH}"
+            }
+        },
+        {
+            "name": "Debug: hello_node_cpp (Combined)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/install/hello_world_combined/lib/hello_world_combined/hello_node_cpp",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "LD_LIBRARY_PATH",
+                    "value": "${workspaceFolder}/install/hello_world_combined/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib"
+                },
+                {
+                    "name": "AMENT_PREFIX_PATH",
+                    "value": "${workspaceFolder}/install/hello_world_combined:/opt/ros/humble"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}

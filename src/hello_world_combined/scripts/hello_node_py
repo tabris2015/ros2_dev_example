@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+from hello_world_combined.hello_node import main
+
+main()

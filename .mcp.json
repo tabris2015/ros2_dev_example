@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ros2": {
+      "type": "sse",
+      "url": "${ROS2_MCP_URL:-http://localhost:8000/sse}"
+    }
+  }
+}

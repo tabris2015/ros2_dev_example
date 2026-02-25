@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source /opt/ros/humble/setup.bash)",
+      "Bash(source /workspaces/hello_ros2/install/setup.bash)",
+      "Bash(colcon test --packages-select hello_world_combined)",
+      "Bash(colcon test-result --verbose)",
+      "Bash(colcon build --packages-select hello_world_combined)",
+      "Bash(timeout 3 ros2 run hello_world_combined hello_node_cpp)",
+      "Bash(timeout 3 ros2 run hello_world_combined hello_node_py)",
+      "Bash(find /workspaces/hello_ros2/src -name \"__init__.py\" -exec ls -la {} ;)",
+      "Bash(chmod +x /workspaces/hello_ros2/.claude/hooks/guard-workspace-clean.sh /workspaces/hello_ros2/.claude/hooks/format-cpp.sh)"
+    ]
+  }
+}

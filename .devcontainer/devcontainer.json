@@ -1,0 +1,28 @@
+// .devcontainer/devcontainer.json
+{
+    "name": "ROS 2 Humble Dev",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "remoteUser": "vscode",
+    "runArgs": [
+        "--network=host",
+        "--privileged"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ranch-hand-robotics.rde-pack",
+                "ms-python.python",
+                "ms-vscode.cpptools",
+                "eamodio.gitlens",
+                "anthropic.claude-code"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    },
+    // Post-creation command to ensure workspace is ready
+    "postCreateCommand": "sudo rosdep update"
+}

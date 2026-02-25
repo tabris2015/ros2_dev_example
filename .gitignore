@@ -1,0 +1,21 @@
+# Colcon build artifacts
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# C++
+*.o
+*.so
+*.a
+
+# IDE
+.vscode/.browse.c_cpp.db*
+.vscode/ipch/
+
+# OS
+.DS_Store
