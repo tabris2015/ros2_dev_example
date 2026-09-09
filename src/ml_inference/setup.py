@@ -17,7 +17,7 @@ setup(
     zip_safe=True,
     maintainer='vscode',
     maintainer_email='eduardo.laruta@gmail.com',
-    description='Object detection inference node using PyTorch and torchvision',
+    description='Object detection inference using PyTorch/ONNX Runtime',
     license='Apache-2.0',
     extras_require={
         'test': ['pytest'],
@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'detector_node = ml_inference.detector_node:main',
+            'onnx_detector_node = ml_inference.onnx_detector_node:main',
             'test_image_publisher = ml_inference.test_image_publisher:main',
         ],
     },

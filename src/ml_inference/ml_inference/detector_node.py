@@ -40,6 +40,7 @@ class DetectorNode(Node):
     """Object detection node using torchvision pretrained models."""
 
     def __init__(self):
+        """Initialize the detector node."""
         super().__init__('detector_node')
 
         # Declare ROS parameters
@@ -234,6 +235,7 @@ class DetectorNode(Node):
 
 
 def main(args=None):
+    """Run the detector node."""
     rclpy.init(args=args)
     node = DetectorNode()
     try:

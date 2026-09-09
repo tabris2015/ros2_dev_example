@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-ROS 2 Humble workspace with three hello-world packages implementing the same publisher node pattern, plus an ML inference package for object detection. The hello-world nodes publish `std_msgs/String` messages on the `chatter` topic at 1 Hz. The ML inference node subscribes to camera images and publishes `vision_msgs/Detection2DArray`.
+ROS 2 Humble workspace with three hello-world packages implementing the same publisher node pattern, plus an ML inference package for object detection. The hello-world nodes publish `std_msgs/String` messages on the `chatter` topic at 1 Hz. The ML inference package provides two detector nodes (PyTorch and ONNX Runtime) that subscribe to camera images and publish `vision_msgs/Detection2DArray`.
 
 ## Build Commands
 
@@ -51,6 +51,20 @@ ros2 run ml_inference detector_node --ros-args \
     -p model_name:=fasterrcnn_resnet50_fpn \
     -p image_topic:=/usb_cam/image_raw \
     -p device:=cuda:0                                   # GPU (if available)
+
+# ONNX inference node (object detection)
+ros2 run ml_inference onnx_detector_node --ros-args \
+    -p model_path:=/path/to/model.onnx                  # Required
+ros2 run ml_inference onnx_detector_node --ros-args \
+    -p model_path:=/path/to/model.onnx \
+    -p model_format:=yolo \
+    -p input_size:=640 \
+    -p confidence_threshold:=0.5 \
+    -p nms_threshold:=0.45 \
+    -p device:=cuda                                     # GPU (if available)
+
+# Test image publisher (sanity check for either detector)
+ros2 run ml_inference test_image_publisher
 ```
 
 ## Architecture
@@ -59,13 +73,17 @@ ros2 run ml_inference detector_node --ros-args \
 - **`src/hello_world_cpp/`** — C++-only package (`ament_cmake` build type). Node in `src/hello_node.cpp`, C++17 with `-Wall -Wextra -Wpedantic`. Tests use `ament_lint_auto`.
 - **`src/hello_world_combined/`** — Mixed C++/Python package (`ament_cmake` + `ament_cmake_python`). Contains both nodes in a single package. C++ node built via CMake, Python module installed via `ament_python_install_package()`, Python entry point in `scripts/hello_node_py`. Tests use both `ament_lint_auto` and `ament_cmake_pytest`.
 
-- **`src/ml_inference/`** — Python-only package (`ament_python` build type). Object detection node in `ml_inference/detector_node.py` using torchvision pretrained models. Subscribes to `sensor_msgs/Image`, publishes `vision_msgs/Detection2DArray`. Configurable via ROS parameters: `confidence_threshold`, `device`, `image_topic`, `model_name`, `model_path`. Requires PyTorch (installed in devcontainer).
+- **`src/ml_inference/`** — Python-only package (`ament_python` build type). Two object detection nodes:
+  - `detector_node.py` — PyTorch/torchvision pretrained models. Parameters: `confidence_threshold`, `device`, `image_topic`, `model_name`, `model_path`.
+  - `onnx_detector_node.py` — ONNX Runtime inference. Parameters: `model_path` (required), `model_format` (`onnx_zoo`|`yolo`|`normalized`), `input_size`, `confidence_threshold`, `nms_threshold`, `device` (`cpu`|`cuda`|`tensorrt`), `image_topic`.
+  - `test_image_publisher.py` — Publishes a test image for sanity-checking either detector.
+  - Both detectors subscribe to `sensor_msgs/Image` and publish `vision_msgs/Detection2DArray`. Python deps listed in `requirements.txt`.
 
 Hello-world packages depend on `rclcpp`/`rclpy` and `std_msgs`. The ML inference package depends on `rclpy`, `sensor_msgs`, `vision_msgs`, and `cv_bridge`.
 
 ## Development Environment
 
-Devcontainer based on `osrf/ros:humble-desktop-full` with host networking and privileged mode. PyTorch CPU is pre-installed in the devcontainer image (see `docs/gpu_migration.md` to switch to CUDA). VS Code debug configurations exist in `.vscode/launch.json` for all packages — Python nodes use debugpy, C++ nodes use GDB (cppdbg). C++ IntelliSense is configured in `.vscode/c_cpp_properties.json` to use the merged `build/compile_commands.json` (covers all C++ packages). Build defaults in `colcon_defaults.yaml` ensure compile commands and Debug symbols are always generated.
+Devcontainer based on `osrf/ros:humble-desktop-full` with host networking and privileged mode. PyTorch CPU and ONNX Runtime are pre-installed in the devcontainer image from `src/ml_inference/requirements.txt` (see `docs/gpu_migration.md` to switch to CUDA). VS Code debug configurations exist in `.vscode/launch.json` for all packages — Python nodes use debugpy, C++ nodes use GDB (cppdbg). C++ IntelliSense is configured in `.vscode/c_cpp_properties.json` to use the merged `build/compile_commands.json` (covers all C++ packages). Build defaults in `colcon_defaults.yaml` ensure compile commands and Debug symbols are always generated.
 
 ## Claude Code Skills
 

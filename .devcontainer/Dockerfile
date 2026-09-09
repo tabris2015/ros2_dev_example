@@ -27,10 +27,14 @@ RUN apt-get update && apt-get install -y \
 #   https://download.pytorch.org/whl/cu118  (CUDA 11.8)
 #   https://download.pytorch.org/whl/cu121  (CUDA 12.1)
 # and add "--gpus", "all" to devcontainer.json runArgs.
+# For GPU ONNX Runtime, change onnxruntime to onnxruntime-gpu in requirements.
 ARG PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
+COPY src/ml_inference/requirements.txt /tmp/ml_inference_requirements.txt
 RUN pip3 install --no-cache-dir \
     torch torchvision \
-    --index-url ${PYTORCH_INDEX_URL}
+    --index-url ${PYTORCH_INDEX_URL} \
+    && pip3 install --no-cache-dir -r /tmp/ml_inference_requirements.txt \
+    && rm /tmp/ml_inference_requirements.txt
 
 # Set the default user
 USER $USERNAME
