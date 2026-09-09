@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright 2026 Jose Laruta
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String

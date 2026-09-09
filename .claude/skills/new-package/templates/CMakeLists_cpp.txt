@@ -15,11 +15,14 @@ find_package(std_msgs REQUIRED)
 
 # Add executables here:
 # add_executable(node_name src/node_name.cpp)
-# ament_target_dependencies(node_name rclcpp std_msgs)
+# target_link_libraries(node_name rclcpp::rclcpp ${std_msgs_TARGETS})
 # install(TARGETS node_name DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  # Source files carry a one-line copyright, not the full license block
+  # ament_copyright wants. cpplint still checks that the line exists.
+  set(ament_cmake_copyright_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
 

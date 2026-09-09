@@ -34,6 +34,9 @@ install(PROGRAMS
 # ---------- Testing ----------
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  # Source files carry a one-line copyright, not the full license block
+  # ament_copyright wants. cpplint still checks that the line exists.
+  set(ament_cmake_copyright_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 
   find_package(ament_cmake_pytest REQUIRED)

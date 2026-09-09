@@ -32,6 +32,7 @@ the Jazzy init/shutdown idiom):
 **Create** `src/<package>/<package>/<node_name>.py`:
 ```python
 #!/usr/bin/env python3
+# Copyright 2026 Jose Laruta
 """<One line: what this node does.>"""
 
 import rclpy
@@ -76,6 +77,8 @@ lambdas for callbacks, modern CMake targets):
 
 **Create** `src/<package>/src/<node_name>.cpp`:
 ```cpp
+// Copyright 2026 Jose Laruta
+
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"

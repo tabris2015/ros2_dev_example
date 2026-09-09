@@ -1,3 +1,5 @@
+// Copyright 2026 Jose Laruta
+
 #include <chrono>
 #include <functional>
 #include <memory>
