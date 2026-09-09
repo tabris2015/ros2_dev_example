@@ -1,12 +1,13 @@
-# Colcon build artifacts
-/build/
-/install/
-/log/
+# Colcon build artifacts, at any depth (catches stray per-package builds)
+build/
+install/
+log/
 
 # Python
 __pycache__/
 *.pyc
 *.egg-info/
+.pytest_cache/
 
 # C++
 *.o
@@ -16,6 +17,12 @@ __pycache__/
 # IDE
 .vscode/.browse.c_cpp.db*
 .vscode/ipch/
+
+# Per-user Claude Code permissions
+.claude/settings.local.json
+
+# Downloaded model weights
+/models/
 
 # OS
 .DS_Store

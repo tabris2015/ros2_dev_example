@@ -94,7 +94,6 @@ hello_ros2/
 │   ├── c_cpp_properties.json         # C++ IntelliSense config
 │   ├── launch.json                   # Debug configurations
 │   └── settings.json                 # Editor settings
-├── .mcp.json                         # MCP server config (ROS 2)
 ├── .gitignore                        # Git ignore (build/, install/, log/)
 ├── CLAUDE.md                         # AI assistant instructions
 ├── colcon_defaults.yaml              # Default colcon build settings
@@ -308,41 +307,9 @@ Hooks are automatic actions configured in `.claude/settings.json`:
 
 MCP (Model Context Protocol) servers give Claude Code live access to external tools.
 
-#### ROS 2 MCP Server (optional)
+#### ROS 2 MCP Server
 
-The `.mcp.json` file configures the [LCAS ros2_mcp](https://github.com/LCAS/ros2_mcp) server, which lets Claude introspect a running ROS 2 system — list topics, echo messages, inspect interfaces, and monitor system health.
-
-**Setup:**
-
-1. Clone into the workspace:
-   ```bash
-   cd src
-   git clone https://github.com/LCAS/ros2_mcp.git
-   cd ..
-   ```
-
-2. Install dependencies:
-   ```bash
-   rosdep install -i --from-paths src/
-   ```
-
-3. Build:
-   ```bash
-   colcon build
-   source install/setup.bash
-   ```
-
-4. Start the MCP server:
-   ```bash
-   ros2 launch ros2_mcp mcp_server.launch.py
-   ```
-
-5. Claude Code will auto-detect it via `.mcp.json` (serves on `http://localhost:8000/sse`).
-
-To use a custom URL, set the environment variable before launching Claude Code:
-```bash
-export ROS2_MCP_URL=http://your-host:port/sse
-```
+The [LCAS ros2_mcp](https://github.com/LCAS/ros2_mcp) server lets Claude introspect a running ROS 2 system. It will return as an appendix lesson with tested setup instructions; the project config was removed until then.
 
 #### GitHub MCP Server (recommended)
 
