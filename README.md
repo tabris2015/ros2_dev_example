@@ -1,424 +1,130 @@
-# Hello ROS 2
+# modern-ros2
 
-A ROS 2 Humble template workspace with three example packages, a full devcontainer setup, and Claude Code AI-assisted development tooling (skills, hooks, and MCP integration).
+A series of ROS 2 Jazzy lessons, in Python and C++ side by side, that build one
+system: a fake differential-drive robot with a synthetic camera. Each lesson is
+a package. Later lessons depend on earlier ones. Written for the author's own
+learning and published for anyone walking the same road.
 
-Use this as a starting point for new ROS 2 projects.
+## Quick start
 
-## Table of Contents
+You need Docker and VS Code with the Dev Containers extension.
 
-- [Quick Start](#quick-start)
-- [Project Structure](#project-structure)
-- [Packages](#packages)
-- [Building and Testing](#building-and-testing)
-- [Running Nodes](#running-nodes)
-- [Debugging](#debugging)
-- [Claude Code Integration](#claude-code-integration)
-  - [Skills (Slash Commands)](#skills-slash-commands)
-  - [Hooks](#hooks)
-  - [MCP Servers](#mcp-servers)
-- [Development Workflow](#development-workflow)
-- [Using as a Template](#using-as-a-template)
-
----
-
-## Quick Start
-
-### Prerequisites
-
-- [Docker](https://docs.docker.com/get-docker/)
-- [VS Code](https://code.visualstudio.com/) with the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
-- (Optional) [Claude Code](https://claude.ai/code) CLI or VS Code extension
-
-### Open in Devcontainer
-
-1. Clone the repository:
+1. Clone and open:
    ```bash
-   git clone <repo-url> hello_ros2
-   cd hello_ros2
+   git clone git@github.com:tabris2015/modern-ros2.git
+   code modern-ros2
    ```
-2. Open in VS Code:
+2. Choose "Reopen in Container" and pick one of the two configurations:
+   - `base`: headless. ROS 2 core, build and lint tooling, keyboard teleop. For a
+     Jetson, SSH sessions, or CI. About 2.5 GB.
+   - `full`: `base` plus rviz2, rqt, PlotJuggler, xacro. Needs an X server; run
+     `xhost +local:` on the host once before opening. About 6 GB.
+3. Build and test everything:
    ```bash
-   code .
+   colcon build --symlink-install
+   colcon test --return-code-on-test-failure && colcon test-result --verbose
    ```
-3. When prompted, click **Reopen in Container** (or run `Dev Containers: Reopen in Container` from the command palette).
+4. Reload the VS Code window once after the first build so the debugger sees the
+   workspace overlay. Then start with lesson 1.
 
-The devcontainer is based on `osrf/ros:humble-desktop-full` and includes:
-- ROS 2 Humble (auto-sourced in every terminal)
-- Python 3, pip, GDB
-- VS Code extensions: RDE Pack, Python, C++ tools, GitLens, Claude Code
+Both images build for amd64 and arm64. CI proves it on every change under
+`.devcontainer/`.
 
-### First Build
+## Curriculum
 
-Once inside the container:
+Status: planned, in progress, done. Lessons 3 to 9 accumulate into one working
+robot; the plant is an integrator node, no simulator required.
 
-```bash
-colcon build
-source install/setup.bash
+| # | Package | Covers | Status |
+|---|---|---|---|
+| 01 | `tut01_nodes` | Nodes, topics, timers, the three package layouts | in progress |
+| 02 | `tut02_interfaces` | msg/srv/action, rosidl, service client and server | planned |
+| 03 | `tut03_launch_basics` | LaunchDescription, Node, param files | planned |
+| 04 | `tut04_params` | Descriptors, ranges, set-callbacks, YAML. Plant node, teleop, PlotJuggler | planned |
+| 05 | `tut05_qos` | Compatibility matrix, durability, sensor profiles. Camera node | planned |
+| 06 | `tut06_executors` | Callback groups, MultiThreadedExecutor, the deliberate deadlock | planned |
+| 07 | `tut07_sync` | message_filters, ApproximateTime and ExactTime | planned |
+| 08 | `tut08_tf` | TF2, URDF, xacro, robot_state_publisher, rviz | planned |
+| 09 | `tut09_time` | ROS time vs steady time, use_sim_time, `/clock` | planned |
+| 10 | `tut10_actions` | Goal, feedback, cancel. `NavigateToWaypoint` | planned |
+| 11 | `tut11_launch` | Arguments, namespaces, remapping, event handlers, Python/XML/YAML | planned |
+| 12 | `tut12_lifecycle` | Managed nodes, ordered bringup, diagnostics | planned |
+| 13 | `tut13_composition` | Components, containers, intra-process, type adaptation, loaned messages | planned |
+| 14 | `tut14_capstone` | The whole robot as lifecycle components in one container | planned |
+| 15 | `tut15_testing` | pytest, gtest, launch_testing, the CI explained | planned |
+| 16 | `tut16_bags` | rosbag2, MCAP vs sqlite3, reading bags from code, regression tests | planned |
+| 17 | `tut17_tools` | rqt, ros2 doctor, tf2_tools, introspection | planned |
+| 18 | `tut18_multimachine` | Domain IDs, discovery, rmw selection, laptop plus Jetson | planned |
+| 19 | `tut19_driver` | A real serial or USB device node, reconnection, error handling | planned |
+| 20-22 | `tut20_control_*` | ros2_control: hardware interface, controller manager, diff_drive_controller | planned |
+| A | appendix | Gazebo swapped in for the plant node | planned |
+| B | appendix | ros2_mcp, agent introspection of a live graph | planned |
+| C | appendix | [C++ notes](docs/cpp-notes.md) | in progress |
+| D | appendix | Where next: Nav2, MoveIt, real-time, SROS2 | planned |
+
+The full plan, with the decisions behind it and the phases, is in
+[docs/plan.md](docs/plan.md). The author's running notes are in
+[docs/journal.md](docs/journal.md).
+
+## How a lesson is laid out
+
+One package per lesson, `tutNN_topic`, in the combined `ament_cmake` plus
+`ament_cmake_python` layout. The Python and C++ node share a node name and
+behave the same; executables are `<node>_py` and `<node>_cpp`, and launch files
+take `lang:=py|cpp`. Lesson 1 is the exception with three packages, because the
+three layouts are what it teaches.
+
+The package README is the lesson, and every one has the same sections:
+
+- Concept
+- Expected output, verbatim
+- Break it on purpose
+- Node graph
+- CLI cheat sheet
+- In the wild: real repositories using the pattern, each link checked
+- Exercises, with solutions in `solution/` that build only with
+  `--cmake-args -DTUT_BUILD_SOLUTIONS=ON`
+
+Explanations of the C++ language itself stay out of the lesson READMEs and live
+in [docs/cpp-notes.md](docs/cpp-notes.md), one section per lesson.
+
+## Repository layout
+
+```
+src/                  lesson packages (tutNN_topic), later also tut_interfaces and tut_robot_sim
+docs/                 plan.md, journal.md, cpp-notes.md
+.devcontainer/        one Dockerfile with base and full targets, one devcontainer.json per target
+.github/workflows/    ci.yml (colcon build and test on amd64 and arm64), docker.yml (image builds)
+.claude/              Claude Code skills and hooks, see below
+colcon_defaults.yaml  Debug builds with compile_commands.json by default
 ```
 
-### Run a Node
+## Claude Code
 
-```bash
-ros2 run hello_world hello_node
-```
+The repository ships tooling for [Claude Code](https://claude.ai/code). It is
+optional; nothing in the lessons depends on it.
 
-You should see `Publishing: "Hello World: <timestamp>"` at 1 Hz.
-
----
-
-## Project Structure
-
-```
-hello_ros2/
-├── src/                              # ROS 2 packages
-│   ├── hello_world/                  # Python-only package
-│   ├── hello_world_cpp/              # C++-only package
-│   └── hello_world_combined/         # Mixed C++/Python package
-├── .claude/                          # Claude Code configuration
-│   ├── skills/                       # Custom slash commands
-│   │   ├── build/SKILL.md
-│   │   ├── test/SKILL.md
-│   │   ├── new-package/SKILL.md      # + templates/
-│   │   ├── new-node/SKILL.md
-│   │   ├── launch/SKILL.md
-│   │   └── msg/SKILL.md
-│   ├── hooks/                        # Automation hooks
-│   │   ├── guard-workspace-clean.sh
-│   │   └── format-cpp.sh
-│   ├── settings.json                 # Project hooks config
-│   └── settings.local.json           # Local permission overrides
-├── .devcontainer/                    # Docker devcontainer
-│   ├── devcontainer.json
-│   └── Dockerfile
-├── .vscode/                          # VS Code config
-│   ├── c_cpp_properties.json         # C++ IntelliSense config
-│   ├── launch.json                   # Debug configurations
-│   └── settings.json                 # Editor settings
-├── .gitignore                        # Git ignore (build/, install/, log/)
-├── CLAUDE.md                         # AI assistant instructions
-├── colcon_defaults.yaml              # Default colcon build settings
-└── README.md                         # This file
-```
-
----
-
-## Packages
-
-All three packages implement the same node pattern — a publisher that sends `std_msgs/String` messages on the `chatter` topic at 1 Hz — demonstrating the three ROS 2 package types.
-
-### hello_world (Python)
-
-| Item | Value |
+| Skill | What it does |
 |---|---|
-| Build type | `ament_python` |
-| Node class | `hello_world/hello_node.py` → `HelloWorldNode` |
-| Entry point | `setup.py` → `hello_node = hello_world.hello_node:main` |
-| Dependencies | `rclpy`, `std_msgs` |
-| Tests | pytest (flake8, pep257, copyright) |
-
-### hello_world_cpp (C++)
-
-| Item | Value |
-|---|---|
-| Build type | `ament_cmake` |
-| Node class | `src/hello_node.cpp` → `HelloWorldCppNode` |
-| Standard | C++17 with `-Wall -Wextra -Wpedantic` |
-| Dependencies | `rclcpp`, `std_msgs` |
-| Tests | ament_lint_auto (cpplint, cppcheck, uncrustify) |
-
-### hello_world_combined (Mixed C++/Python)
-
-| Item | Value |
-|---|---|
-| Build type | `ament_cmake` + `ament_cmake_python` |
-| C++ node | `src/hello_node.cpp` → executable `hello_node_cpp` |
-| Python node | `hello_world_combined/hello_node.py` → script `hello_node_py` |
-| Dependencies | `rclcpp`, `rclpy`, `std_msgs` |
-| Tests | ament_lint_auto + pytest (flake8, pep257, copyright) |
-
----
-
-## Building and Testing
-
-### Build
-
-The workspace uses `colcon_defaults.yaml` to set default CMake arguments for all builds:
-- **Debug build** (`CMAKE_BUILD_TYPE=Debug`) — includes debug symbols for GDB
-- **Compile commands** (`CMAKE_EXPORT_COMPILE_COMMANDS=ON`) — enables C++ IntelliSense in VS Code
-
-```bash
-# Build everything (Debug by default)
-colcon build
-
-# Build a single package
-colcon build --packages-select hello_world
-
-# Build with symlinks (faster iteration for Python)
-colcon build --symlink-install
-
-# Release build (overrides the Debug default)
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
-
-# Always source the overlay after building
-source install/setup.bash
-```
-
-### Test
-
-```bash
-# Test everything
-colcon test
-
-# Test a single package
-colcon test --packages-select hello_world_cpp
-
-# View detailed results
-colcon test-result --verbose
-```
-
----
-
-## Running Nodes
-
-After building and sourcing the overlay:
-
-```bash
-# Python node (standalone)
-ros2 run hello_world hello_node
-
-# C++ node (standalone)
-ros2 run hello_world_cpp hello_node
-
-# Python node (combined package)
-ros2 run hello_world_combined hello_node_py
-
-# C++ node (combined package)
-ros2 run hello_world_combined hello_node_cpp
-```
-
-In a separate terminal, verify messages are flowing:
-
-```bash
-ros2 topic echo /chatter
-```
-
----
-
-## Debugging
-
-VS Code launch configurations are provided in `.vscode/launch.json` for all four node variants:
-
-| Configuration | Type | Debugger |
-|---|---|---|
-| Debug: hello_node (Python) | Python | debugpy |
-| Debug: hello_node (C++) | C++ | GDB |
-| Debug: hello_node_py (Combined) | Python | debugpy |
-| Debug: hello_node_cpp (Combined) | C++ | GDB |
-
-**To debug:**
-1. Build the workspace first (`colcon build`)
-2. Open the Run and Debug panel (Ctrl+Shift+D)
-3. Select the configuration from the dropdown
-4. Press F5
-
-For C++ debugging, the executable must exist in `install/` — rebuild if it's missing. The default Debug build type ensures symbols are available without extra configuration.
-
-### C++ IntelliSense
-
-C++ IntelliSense is configured via `.vscode/c_cpp_properties.json` to use the merged `build/compile_commands.json` (generated automatically by `colcon_defaults.yaml`). If IntelliSense shows errors after a clean build, reload the VS Code window (Ctrl+Shift+P → "Developer: Reload Window").
-
----
-
-## Claude Code Integration
-
-This project includes a full Claude Code setup for AI-assisted ROS 2 development. Claude Code can build, test, scaffold packages, generate launch files, and more — all through natural language or slash commands.
-
-### Skills (Slash Commands)
-
-Skills are defined in `.claude/skills/` and invoked with `/` in Claude Code:
-
-#### `/build` — Build packages
-
-```
-/build hello_world          # Build one package (Debug)
-/build --all                # Build entire workspace (Debug)
-/build --release            # Build all in Release mode
-/build hello_world --release  # Build one package in Release mode
-```
-
-Automatically sources ROS 2, runs `colcon build --symlink-install`, and sources the overlay. Defaults to Debug builds (set in `colcon_defaults.yaml`). Pass `--release` to build with optimizations. Reports errors with file paths and line numbers.
-
-#### `/test` — Run tests
-
-```
-/test hello_world_cpp       # Test one package
-/test                       # Test everything
-```
-
-Builds first, then runs `colcon test` and `colcon test-result --verbose`. Parses and summarizes failures.
-
-#### `/new-package` — Scaffold a package
-
-```
-/new-package my_robot_driver python      # Python package
-/new-package my_robot_driver cpp         # C++ package
-/new-package my_robot_driver combined    # Mixed C++/Python package
-```
-
-Creates the full directory structure under `src/` with `package.xml`, build files (`setup.py` or `CMakeLists.txt`), test scaffolding, and resource markers. Templates matching the existing packages are in `.claude/skills/new-package/templates/`.
-
-#### `/new-node` — Add a node to a package
-
-```
-/new-node lidar_processor my_robot_driver cpp
-/new-node path_planner my_robot_driver python
-```
-
-Creates the node source file with standard boilerplate (init, spin, shutdown, logger) and wires up the entry point in `setup.py` or `CMakeLists.txt`.
-
-#### `/launch` — Generate a launch file
-
-```
-/launch bringup_launch my_robot
-```
-
-Creates a Python launch file in `src/<pkg>/launch/` with `LaunchDescription` and `Node` actions, and updates the build system to install it.
-
-#### `/msg` — Create an interface definition
-
-```
-/msg RobotStatus msg my_robot_driver       # .msg file
-/msg GetPose srv my_robot_driver            # .srv file
-/msg FollowPath action my_robot_driver      # .action file
-```
-
-Creates the `.msg`/`.srv`/`.action` file, adds `rosidl_generate_interfaces()` to `CMakeLists.txt`, and adds the required `rosidl_default_generators` dependencies to `package.xml`.
-
-### Hooks
-
-Hooks are automatic actions configured in `.claude/settings.json`:
-
-| Hook | Trigger | What it does |
-|---|---|---|
-| Workspace clean guard | Before any Bash command | Blocks `rm -rf build/ install/ log/` to prevent accidental deletion. Use `/build` to rebuild instead. |
-| C++ auto-format | After editing `.cpp`/`.hpp`/`.h` files | Runs `ament_uncrustify --reformat` to maintain consistent C++ style. |
-
-### MCP Servers
-
-MCP (Model Context Protocol) servers give Claude Code live access to external tools.
-
-#### ROS 2 MCP Server
-
-The [LCAS ros2_mcp](https://github.com/LCAS/ros2_mcp) server lets Claude introspect a running ROS 2 system. It will return as an appendix lesson with tested setup instructions; the project config was removed until then.
-
-#### GitHub MCP Server (recommended)
-
-For PR reviews, issue tracking, and CI integration:
-
-```bash
-claude mcp add --transport http github https://api.githubcopilot.com/mcp/
-```
-
-Then authenticate inside Claude Code:
-```
-/mcp
-```
-
-This is user-scoped (not committed to the repo) since it requires individual authentication.
-
----
-
-## Development Workflow
-
-Here's the recommended workflow for developing with this template, both with and without Claude Code.
-
-### Without Claude Code
-
-1. **Create a package:**
-   ```bash
-   cd src
-   ros2 pkg create --build-type ament_cmake my_package --dependencies rclcpp std_msgs
-   cd ..
-   ```
-
-2. **Write your node** in `src/my_package/src/my_node.cpp`
-
-3. **Build:**
-   ```bash
-   colcon build --packages-select my_package
-   source install/setup.bash
-   ```
-
-4. **Test:**
-   ```bash
-   colcon test --packages-select my_package
-   colcon test-result --verbose
-   ```
-
-5. **Run:**
-   ```bash
-   ros2 run my_package my_node
-   ```
-
-### With Claude Code
-
-1. **Scaffold a package:**
-   ```
-   /new-package my_package cpp
-   ```
-
-2. **Add a node:**
-   ```
-   /new-node my_node my_package cpp
-   ```
-
-3. **Describe what the node should do** in natural language:
-   ```
-   Make my_node subscribe to /scan (sensor_msgs/LaserScan) and publish
-   the closest obstacle distance on /closest_obstacle (std_msgs/Float64)
-   ```
-
-4. **Build and test:**
-   ```
-   /build my_package
-   /test my_package
-   ```
-
-5. **Add a launch file:**
-   ```
-   /launch my_package_launch my_package
-   ```
-
-6. **Create custom messages if needed:**
-   ```
-   /msg ObstacleInfo msg my_package
-   ```
-
-7. **Debug issues** by asking Claude Code naturally:
-   ```
-   The node crashes when /scan has no ranges. Can you add a guard?
-   ```
-
-### Starting a New Project from This Template
-
-1. Fork or clone this repository
-2. Remove the example packages you don't need:
-   ```bash
-   rm -rf src/hello_world src/hello_world_cpp src/hello_world_combined
-   ```
-3. Clean build artifacts:
-   ```bash
-   rm -rf build/ install/ log/
-   ```
-4. Create your first package:
-   ```
-   /new-package my_robot_driver cpp
-   ```
-5. Update `CLAUDE.md` with your project-specific architecture notes
-6. The skills, hooks, and MCP config carry over — no reconfiguration needed
-
----
+| `/build [pkg] [--release] [--solutions]` | `colcon build --symlink-install`, reports errors with file and line |
+| `/test [pkg]` | build, `colcon test`, `colcon test-result --verbose`, summarizes failures |
+| `/lesson <NN> <topic>` | scaffolds a lesson package with both nodes, launch, config, README skeleton, solutions |
+| `/new-package <name> [python|cpp|combined]` | scaffolds a plain package |
+| `/new-node <node> <pkg> [python|cpp]` | adds a node and wires the entry point |
+| `/launch <name> <pkg>` | adds a launch file and installs it |
+| `/msg <Name> [msg|srv|action] <pkg>` | adds an interface and the rosidl wiring |
+
+Two hooks: one blocks `rm -rf` on `build/`, `install/`, `log/`; one runs
+`ament_uncrustify` on edited C++ files.
+
+## Notes
+
+- Docker Desktop on macOS has no real host networking, so DDS discovery between
+  host and container does not work there. Everything inside one container still
+  does.
+- The `hello_world*` packages are the Humble-era template this repository grew
+  from. Lesson 1 replaces them.
 
 ## License
 
-TODO: Add license.
+Apache-2.0. See [LICENSE](LICENSE).
