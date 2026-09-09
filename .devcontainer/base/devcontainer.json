@@ -1,0 +1,41 @@
+// Headless devcontainer: ROS 2 Jazzy core plus build and lint tooling.
+// Pick this on a Jetson, over SSH, or when you do not need rviz.
+{
+    "name": "modern-ros2 base (headless)",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": "..",
+        "target": "base"
+    },
+    // Pin the in-container path regardless of the local folder name.
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/modern-ros2,type=bind",
+    "workspaceFolder": "/workspaces/modern-ros2",
+    "remoteUser": "vscode",
+    "runArgs": [
+        // Host networking so DDS discovery reaches nodes on the host and the LAN.
+        "--network=host",
+        // Shared memory transport between host and container (Fast DDS).
+        "--ipc=host",
+        "--privileged"
+    ],
+    "containerEnv": {
+        // Read by ~/.bashrc to source install/setup.bash once the workspace is built.
+        "WS": "${containerWorkspaceFolder}"
+    },
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ranch-hand-robotics.rde-pack",
+                "ms-python.python",
+                "ms-vscode.cpptools",
+                "eamodio.gitlens",
+                "anthropic.claude-code",
+                "bierner.markdown-mermaid"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    }
+}
