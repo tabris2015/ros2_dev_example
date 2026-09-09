@@ -1,0 +1,4 @@
+# Parameters for the TOPIC node. Keys under ros__parameters must match what
+# the node declares; undeclared keys are silently ignored (lesson 4).
+TOPIC:
+  ros__parameters: {}

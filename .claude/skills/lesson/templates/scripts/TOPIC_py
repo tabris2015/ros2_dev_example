@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+# Copyright YEAR Jose Laruta
+"""ros2 run entry point for the Python TOPIC node."""
+
+from PACKAGE_NAME.TOPIC import main
+
+if __name__ == '__main__':
+    main()
