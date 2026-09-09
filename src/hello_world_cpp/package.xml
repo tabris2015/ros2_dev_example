@@ -4,8 +4,8 @@
   <name>hello_world_cpp</name>
   <version>0.0.0</version>
   <description>C++ hello world publisher node for ROS 2</description>
-  <maintainer email="eduardo.laruta@gmail.com">vscode</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="eduardo.laruta@gmail.com">Jose Laruta</maintainer>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

@@ -4,8 +4,8 @@
   <name>hello_world_combined</name>
   <version>0.0.0</version>
   <description>Combined C++ and Python hello world publisher nodes for ROS 2</description>
-  <maintainer email="eduardo.laruta@gmail.com">vscode</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="eduardo.laruta@gmail.com">Jose Laruta</maintainer>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>

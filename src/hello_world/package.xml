@@ -4,8 +4,8 @@
   <name>hello_world</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="eduardo.laruta@gmail.com">vscode</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="eduardo.laruta@gmail.com">Jose Laruta</maintainer>
+  <license>Apache-2.0</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
