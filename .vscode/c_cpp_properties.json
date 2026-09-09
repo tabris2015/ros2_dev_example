@@ -1,11 +1,15 @@
 {
     "configurations": [
         {
-            "name": "ROS 2 Humble",
+            "name": "ROS 2 Jazzy",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "includePath": [
+                "${workspaceFolder}/src/**",
+                "/opt/ros/jazzy/include/**"
+            ],
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "${default}"
         }
     ],
     "version": 4

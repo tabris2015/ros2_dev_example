@@ -16,7 +16,7 @@ if echo "$COMMAND" | grep -qE 'rm\s+(-[a-zA-Z]*r[a-zA-Z]*f|(-[a-zA-Z]*f[a-zA-Z]*
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
       permissionDecision: "deny",
-      permissionDecisionReason: "Blocked: destructive workspace clean (rm -rf build/install/log). Use /build to rebuild instead, or explicitly ask the user to confirm workspace clean."
+      permissionDecisionReason: "Blocked: rm -rf on build/, install/ or log/. Rebuild with /build. If a package needs a clean (for example after switching --symlink-install), ask the user to confirm and let them run the delete, or use `git clean` on untracked paths."
     }
   }'
 else

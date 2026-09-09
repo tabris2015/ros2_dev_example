@@ -2,27 +2,27 @@
 name: test
 description: Run ROS 2 package tests and report results. Use when the user asks to test, validate, or check packages.
 argument-hint: "[package-name or --all]"
-allowed-tools: Bash(colcon *), Bash(source *), Bash(cat *)
+allowed-tools: Bash(colcon *), Bash(source *), Bash(cat *), Bash(git rev-parse *)
 ---
 
-# Test ROS 2 Packages
+# Test ROS 2 packages
 
-Run tests for one or more ROS 2 packages and report results.
+Build, test, and report results for one or more packages.
 
 ## Arguments
 
-- `$ARGUMENTS` — optional package name(s) or `--all`
-- If a specific package name is given, use `--packages-select <name>`
-- If `--all` or no argument is given, test the entire workspace
+- `$ARGUMENTS`: optional package name(s) or `--all`
+- A package name becomes `--packages-select <name>`
+- `--all` or no argument tests the whole workspace
 
 ## Steps
 
 1. Source ROS 2:
    ```bash
-   source /opt/ros/humble/setup.bash
+   source /opt/ros/${ROS_DISTRO:-jazzy}/setup.bash
    ```
 
-2. Build first to ensure latest code is compiled:
+2. Build first so tests see the latest code (from `git rev-parse --show-toplevel`):
    ```bash
    colcon build --symlink-install [--packages-select <package-name>]
    ```
@@ -34,22 +34,20 @@ Run tests for one or more ROS 2 packages and report results.
 
 4. Run the tests:
    ```bash
-   colcon test [--packages-select <package-name>]
+   colcon test --return-code-on-test-failure [--packages-select <package-name>]
    ```
 
-5. Get detailed results:
+5. Show details:
    ```bash
    colcon test-result --verbose
    ```
 
-6. If any tests fail:
-   - Read the test log files under `log/latest_test/`
-   - For pytest failures: check `log/latest_test/<package>/stdout_stderr.log`
-   - Report which specific tests failed with file paths and error messages
-   - Suggest fixes
+6. On failure, read `log/latest_test/<package>/stdout_stderr.log`, report which
+   tests failed with file paths and messages, and suggest fixes.
 
 ## Test types in this workspace
 
-- **Python packages**: pytest with ament linters (flake8, pep257, copyright)
-- **C++ packages**: ament_lint_auto (cpplint, cppcheck, uncrustify, xmllint)
-- **Combined packages**: both Python pytest and C++ lint tests
+- Python: pytest with ament linters (flake8, pep257; copyright is skipped by design)
+- C++: `ament_lint_auto` (cpplint, cppcheck, uncrustify, xmllint, lint_cmake)
+- Combined packages run both
+- Lesson packages may add unit tests (pytest, gtest) for non-ROS logic

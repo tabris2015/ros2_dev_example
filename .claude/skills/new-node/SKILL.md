@@ -26,31 +26,38 @@ Add a new node to an existing package with proper boilerplate and entry point re
 
 ## Python node template
 
-Follow the pattern from `src/hello_world/hello_world/hello_node.py`:
+Match the style of the existing Python nodes under `src/` (typed, docstrings,
+the Jazzy init/shutdown idiom):
 
 **Create** `src/<package>/<package>/<node_name>.py`:
 ```python
 #!/usr/bin/env python3
+"""<One line: what this node does.>"""
+
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 
 
 class <NodeClassName>(Node):
-    def __init__(self):
-        super().__init__('<node_name>_node')
-        self.get_logger().info('<NodeClassName> has started!')
+    """<What the node owns and publishes/subscribes.>"""
+
+    def __init__(self) -> None:
+        super().__init__('<node_name>')
+        self.get_logger().info('<node_name> started')
 
 
-def main(args=None):
+def main(args: list[str] | None = None) -> None:
+    """Entry point: init, spin, and shut down cleanly."""
     rclpy.init(args=args)
     node = <NodeClassName>()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        rclpy.try_shutdown()
 
 
 if __name__ == '__main__':
@@ -64,20 +71,23 @@ if __name__ == '__main__':
 
 ## C++ node template
 
-Follow the pattern from `src/hello_world_cpp/src/hello_node.cpp`:
+Match the style of the existing C++ nodes under `src/` (Doxygen comments,
+lambdas for callbacks, modern CMake targets):
 
 **Create** `src/<package>/src/<node_name>.cpp`:
 ```cpp
 #include <memory>
+
 #include "rclcpp/rclcpp.hpp"
 
+/// <One line: what this node does.>
 class <NodeClassName> : public rclcpp::Node
 {
 public:
   <NodeClassName>()
-  : Node("<node_name>_node")
+  : Node("<node_name>")
   {
-    RCLCPP_INFO(this->get_logger(), "<NodeClassName> has started!");
+    RCLCPP_INFO(get_logger(), "<node_name> started");
   }
 };
 
@@ -90,10 +100,10 @@ int main(int argc, char * argv[])
 }
 ```
 
-**Update** `CMakeLists.txt` to add:
+**Update** `CMakeLists.txt` to add (modern targets, not `ament_target_dependencies`):
 ```cmake
 add_executable(<node_name> src/<node_name>.cpp)
-ament_target_dependencies(<node_name> rclcpp std_msgs)
+target_link_libraries(<node_name> rclcpp::rclcpp ${std_msgs_TARGETS})
 
 install(TARGETS <node_name>
   DESTINATION lib/${PROJECT_NAME}
@@ -102,9 +112,9 @@ install(TARGETS <node_name>
 
 ## Naming convention
 
-- Node name: `snake_case` (e.g. `lidar_processor`)
+- Node name and ROS node name: `snake_case` (e.g. `lidar_processor`); no `_node` suffix
 - Class name: `PascalCase` + `Node` suffix (e.g. `LidarProcessorNode`)
-- ROS node name: `snake_case_node` (e.g. `lidar_processor_node`)
+- In combined packages, executables carry a language suffix: `lidar_processor_py`, `lidar_processor_cpp`
 
 ## After creation
 

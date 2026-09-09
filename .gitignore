@@ -1,7 +1,11 @@
-# Colcon build artifacts, at any depth (catches stray per-package builds)
-build/
-install/
-log/
+# Colcon build artifacts at the workspace root, and stray per-package builds
+# under src/. Not a bare `build/`: that would also ignore .claude/skills/build.
+/build/
+/install/
+/log/
+src/**/build/
+src/**/install/
+src/**/log/
 
 # Python
 __pycache__/

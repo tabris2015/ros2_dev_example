@@ -1,88 +1,57 @@
 {
+    // Generic debug configurations for any lesson package.
+    // No environment blocks: the devcontainer's login shell sources ROS 2 and,
+    // once the workspace is built, install/setup.bash. Reload the VS Code window
+    // after the first build so the debugger inherits that environment.
     "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "pkg",
+            "type": "promptString",
+            "description": "Package name, e.g. tut01_nodes"
+        },
+        {
+            "id": "exe",
+            "type": "promptString",
+            "description": "Executable name, e.g. talker_cpp"
+        }
+    ],
     "configurations": [
         {
-            "name": "Debug: hello_node (Python)",
+            "name": "ROS 2: debug current Python file",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/hello_world/hello_world/hello_node.py",
+            "program": "${file}",
             "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/install/hello_world/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages",
-                "LD_LIBRARY_PATH": "/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib",
-                "AMENT_PREFIX_PATH": "/opt/ros/humble",
-                "PATH": "/opt/ros/humble/bin:${env:PATH}"
-            }
+            "cwd": "${workspaceFolder}",
+            "justMyCode": false
         },
         {
-            "name": "Debug: hello_node (C++)",
+            "name": "ROS 2: debug C++ node (gdb)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/install/hello_world_cpp/lib/hello_world_cpp/hello_node",
+            "program": "${workspaceFolder}/install/${input:pkg}/lib/${input:pkg}/${input:exe}",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [
-                {
-                    "name": "LD_LIBRARY_PATH",
-                    "value": "${workspaceFolder}/install/hello_world_cpp/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib"
-                },
-                {
-                    "name": "AMENT_PREFIX_PATH",
-                    "value": "${workspaceFolder}/install/hello_world_cpp:/opt/ros/humble"
-                }
-            ],
             "externalConsole": false,
             "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ],
-            "miDebuggerPath": "/usr/bin/gdb"
+            ]
         },
         {
-            "name": "Debug: hello_node_py (Combined)",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/hello_world_combined/hello_world_combined/hello_node.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/install/hello_world_combined/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages",
-                "LD_LIBRARY_PATH": "/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib",
-                "AMENT_PREFIX_PATH": "${workspaceFolder}/install/hello_world_combined:/opt/ros/humble",
-                "PATH": "/opt/ros/humble/bin:${env:PATH}"
-            }
-        },
-        {
-            "name": "Debug: hello_node_cpp (Combined)",
+            "name": "ROS 2: attach gdb to running node",
             "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/install/hello_world_combined/lib/hello_world_combined/hello_node_cpp",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [
-                {
-                    "name": "LD_LIBRARY_PATH",
-                    "value": "${workspaceFolder}/install/hello_world_combined/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib"
-                },
-                {
-                    "name": "AMENT_PREFIX_PATH",
-                    "value": "${workspaceFolder}/install/hello_world_combined:/opt/ros/humble"
-                }
-            ],
-            "externalConsole": false,
+            "request": "attach",
+            "program": "${workspaceFolder}/install/${input:pkg}/lib/${input:pkg}/${input:exe}",
+            "processId": "${command:pickProcess}",
             "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ],
             "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
